@@ -48,4 +48,4 @@ logging.basicConfig(level=logging.WARNING)
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))[:-3]
 print ROOT_DIR
-identify(os.path.join(ROOT_DIR, 'AIW/mwe'), load=False, multipleFile=True)
+identify(os.path.join(ROOT_DIR, 'Corpora/AIW/mwe.auto'), load=True, multipleFile=True)

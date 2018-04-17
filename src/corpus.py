@@ -12,7 +12,7 @@ projectPath = settings.PROJECT_PATH
 # trainConllFile = projectPath + 'CBT/conll.txt'
 # trainMweFile = projectPath + 'CBT/mwes.txt'
 
-corpusPath = os.path.join(projectPath, 'CBT')
+corpusPath = os.path.join(projectPath, 'Corpora/CBT')
 
 conllFolder = os.path.join(corpusPath, 'Divided-conll')
 mweFolder = os.path.join(corpusPath, 'Divided-MWE')
@@ -22,8 +22,8 @@ trainMweFile = os.path.join(settings.PROJECT_PATH, 'LPP/mwe.txt')
 
 # testConllFile = os.path.join(settings.PROJECT_PATH, 'LPP/conll.txt')
 # testMweFile = os.path.join(settings.PROJECT_PATH, 'LPP/mwe.txt')
-testConllFile = os.path.join(settings.PROJECT_PATH, 'AIW/conll')
-testMweFile = os.path.join(settings.PROJECT_PATH, 'AIW/mwe')
+testConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora//AIW/conll')
+testMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/mwe')
 
 def mweToLatex(filePath):
     res = ''

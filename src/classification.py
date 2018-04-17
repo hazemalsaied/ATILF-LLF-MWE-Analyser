@@ -3,10 +3,10 @@ import pickle
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
 
-vecData = 'vecs_data.pkl'
-clfData = 'cls_data.pkl'
-
-
+#vecData = 'vecs_data.pkl'
+#clfData = 'cls_data.pkl'
+clfData ='../Corpora/CBTBasedModel/cls_data.pkl'
+vecData = '../Corpora/CBTBasedModel/vecs_data.pkl'
 class SVMClf:
     def __init__(self, labels, data, load=False, save=False):
         if load:
