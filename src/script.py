@@ -95,9 +95,9 @@ def AIWToCoNLL(path, newPath):
 
 
 if __name__ == '__main__':
-    # AIWCsvToTextBrut('/Users/halsaied/Downloads/LPP-Simple/Corpora/AIW/DownRabbit.csv')
-    AIWToCoNLL('/Users/halsaied/Downloads/LPP-Simple/Corpora/AIW/AIW.brut.gold',
-               '/Users/halsaied/Downloads/LPP-Simple/Corpora/AIW/AIW.conll')
+    # AIWCsvToTextBrut('/Users/halsaied/Downloads/LPP-Simple/AIW/DownRabbit.csv')
+    AIWToCoNLL('/Users/halsaied/Downloads/LPP-Simple/AIW/AIW.brut.gold',
+               '/Users/halsaied/Downloads/LPP-Simple/AIW/AIW.conll')
 
     # sent = 'you 0 1 must 0 1 see 0 1 to -0.80526 3 it 0 1 that 0 2 you 0 2 regularly 0 1 pull 5.1762 2 out 0 1 the 0 2 baobabs 0 1 as 0 2 soon 0 1 as 0 2 they 0 1 can 0 1 be 0 1 told 0 2 apart 6.7577 1 from 0 1 the 0 2 Rose 0 4 bushes 0 1 to 0 2 which 0 2 they 0 1 look 0 1 very 0 1 similar 0 2 when 0 2 they 0 1 re 0 1 very 0 22 young'
     # sent2 = '0 so 0 1 so 0 i 0 2 I 0 think 0 1 thought 0 a 0 1 a 4.3121 lot -0.3657 2 lot 0 about 0 1 about 0 the 0 1 the 0 adventure 0 2 adventures 0 of 0 1 of 0 the 0 1 the 0 jungle 0 7 jungle 0 and 0 1 and 0 in 0 1 in 0.30383 turn 3.485 3 turn 0 i 0 2 I 0 manage 0 3 managed 0 with 0 1 with 0 a 0 1 a 0 coloured 0 1 coloured 0 pencil 0 2 pencil 0 to 0 1 to 0 make 0 1 make 0 my 0 1 my 0 first 0 1 first 0 drawing 0 10 drawing'

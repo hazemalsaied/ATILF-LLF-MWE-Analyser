@@ -9,22 +9,43 @@ from tranType import TransitionType
 
 projectPath = settings.PROJECT_PATH
 
-# trainConllFile = projectPath + 'Corpora/CBT/conll.txt'
-# trainMweFile = projectPath + 'Corpora/CBT/mwes.txt'
+# trainConllFile = projectPath + 'CBT/conll.txt'
+# trainMweFile = projectPath + 'CBT/mwes.txt'
 
-corpusPath = os.path.join(projectPath, 'Corpora/CBT')
+corpusPath = os.path.join(projectPath, 'CBT')
 
 conllFolder = os.path.join(corpusPath, 'Divided-conll')
 mweFolder = os.path.join(corpusPath, 'Divided-MWE')
 
-trainConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/conll.txt')
-trainMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/mwe.txt')
+trainConllFile = os.path.join(settings.PROJECT_PATH, 'LPP/conll.txt')
+trainMweFile = os.path.join(settings.PROJECT_PATH, 'LPP/mwe.txt')
 
-# testConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/conll.txt')
-# testMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/mwe.txt')
-testConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/conll')
-testMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/mwe')
+# testConllFile = os.path.join(settings.PROJECT_PATH, 'LPP/conll.txt')
+# testMweFile = os.path.join(settings.PROJECT_PATH, 'LPP/mwe.txt')
+testConllFile = os.path.join(settings.PROJECT_PATH, 'AIW/conll')
+testMweFile = os.path.join(settings.PROJECT_PATH, 'AIW/mwe')
 
+def mweToLatex(filePath):
+    res = ''
+    with open(filePath, 'r') as f:
+        for line in f:
+            if line.strip().startswith('#'):
+                continue
+            if line == '\n':
+                res += '\\\\\\\\'
+            else:
+                parts = line.split('\t')
+                if not parts[3].startswith('_'):
+                    mweStr = ''
+                    mwes = parts[3].split(';')
+                    for mwe in mwes:
+                        mweStr += mwe.split(':')[0] + ','
+                    mweStr = mweStr[:-1]
+                    res +=  '\\textbf{' + parts[1]+ ' $_{' + mweStr + '}$} '
+                else:
+                    res += parts[1] + ' '
+    with open(filePath +'.tex', 'w') as f:
+        f.write(res)
 
 def readConlluFile(conlluFile):
     sentences = []
@@ -278,9 +299,9 @@ class Corpus:
             if multipleFile:
                 idxxx = 0
                 for conllFile in os.listdir(conllFolder):
-                    logging.warn('reading TRAIN:  {0}'.format(conllFile))
                     if not conllFile.endswith('.txt'):
                         continue
+                    logging.warn('reading TRAIN:  {0}'.format(conllFile))
                     idx = conllFile.split('.')[0][5:]
                     sents = readConlluFile(os.path.join(conllFolder, conllFile))
                     mweFileP = os.path.join(mweFolder, 'mwe' + str(idx) + '.txt')
@@ -798,3 +819,5 @@ class Token:
                 parentTxt += str(parent) + '\n'
 
         return str(self.position) + ' : ' + self.text + ' : ' + self.posTag + '\n' + 'parent VMWEs\n' + parentTxt
+if __name__ == '__main__':
+    mweToLatex('/Users/halsaied/PycharmProjects/Cornell/ATILF-LLF-MWE-Analyser/Corpora/AIW/mwe')
