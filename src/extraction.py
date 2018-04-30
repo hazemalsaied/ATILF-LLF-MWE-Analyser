@@ -70,9 +70,6 @@ def getFeatures(transition, sent):
     if FeatParams.useTriGram and len(stackElements) > 1 and len(configuration.buffer) > 0:
         generateTriGram(stackElements[-2], stackElements[-1], configuration.buffer[0], 'I_S1 S0 B0', transDic)
 
-    # Syntaxic Informations
-    if len(stackElements) > 0 and FeatParams.useSyntax:
-        generateSyntaxicFeatures(configuration.stack, configuration.buffer, transDic)
 
     # Distance information
     if FeatParams.useS0B0Distance and len(configuration.stack) > 0 and len(configuration.buffer) > 0:
@@ -85,58 +82,9 @@ def getFeatures(transition, sent):
             sent.tokens.index(configuration.stack[-1]) - sent.tokens.index(configuration.stack[-2]))
     addTransitionHistory(transition, transDic)
 
-    if FeatParams.useLexic and len(configuration.buffer) > 0 and len(configuration.stack) >= 1:
-        generateDisconinousFeatures(configuration, sent, transDic)
-
-    enhanceMerge(transition, transDic)
 
     return transDic
 
-
-def enhanceMerge(transition, transDic):
-    if not FeatParams.enhanceMerge:
-        return
-    config = transition.configuration
-    if transition.type.value != 0 and len(config.buffer) > 0 and len(
-            config.stack) > 0 and isinstance(config.stack[-1], Token):
-        if isinstance(config.stack[-1], Token) and areInLexic([config.stack[-1], config.buffer[0]]):
-            transDic['P_In Lexicon( S0, B0)'] = True
-
-        if len(config.buffer) > 1 and areInLexic([config.stack[-1], config.buffer[0], config.buffer[1]]):
-            transDic['P_In Lexicon( S0, B0, B1 )'] = True
-        if len(config.buffer) > 2 and areInLexic(
-                [config.stack[-1], config.buffer[0], config.buffer[1], config.buffer[2]]):
-            transDic['P_In Lexicon( S0, B0, B1, B2)'] = True
-        if len(config.buffer) > 1 and len(config.stack) > 1 and areInLexic(
-                [config.stack[-2], config.stack[-1], config.buffer[1]]):
-            transDic['P_In Lexicon( S1, S0, B1 )'] = True
-
-    if len(config.buffer) > 0 and len(config.stack) > 1 and areInLexic(
-            [config.stack[-2], config.buffer[0]]) and not areInLexic(
-        [config.stack[-1], config.buffer[0]]):
-        transDic['P_In Lexicon( S1, B0)'] = True
-        transDic['P_In Lexicon( S0, B0)'] = False
-        if len(config.buffer) > 1 and areInLexic(
-                [config.stack[-2], config.buffer[1]]) and not areInLexic(
-            [config.stack[-1], config.buffer[1]]):
-            transDic['P_In Lexicon( S1, B1)'] = True
-            transDic['P_In Lexicon( S0, B1)'] = False
-
-
-def generateDisconinousFeatures(configuration, sent, transDic):
-    tokens = getTokens([configuration.stack[-1]])
-    tokenTxt = getTokenLemmas(tokens)
-    for key in Corpus.mweDictionary.keys():
-        if tokenTxt in key and tokenTxt != key:
-            bufidx = 0
-            for bufElem in configuration.buffer[:5]:
-                if bufElem.lemma != '' and (
-                        (tokenTxt + ' ' + bufElem.lemma) in key or (bufElem.lemma + ' ' + tokenTxt) in key):
-                    transDic['L_S0 B' + str(bufidx) + ' Parts Of MWE'] = True
-                    transDic['L_S0 B' + str(bufidx) + 'Parts Of MWE Distance'] = sent.tokens.index(
-                        bufElem) - sent.tokens.index(tokens[-1])
-                bufidx += 1
-            break
 
 
 def generateLinguisticFeatures(token, label, transDic):
@@ -153,35 +101,6 @@ def generateLinguisticFeatures(token, label, transDic):
     if FeatParams.useDictionary and ((token.lemma != '' and token.lemma in Corpus.mweTokenDic.keys())
                                      or token.text in Corpus.mweTokenDic.keys()):
         transDic['L_' + label[2:] + ' In Lexicon'] = 'true'
-
-
-def generateSyntaxicFeatures(stack, buffer, dic):
-    if stack and isinstance(stack[-1], Token):
-        stack0 = stack[-1]
-        if int(stack0.dependencyParent) == -1 or int(
-                stack0.dependencyParent) == 0 or stack0.dependencyLabel.strip() == '' or not buffer:
-            return
-        for bElem in buffer:
-            if bElem.dependencyParent == stack0.position:
-                dic['H_Righ Dep ' + bElem.dependencyLabel] = 'true'
-                dic['H_' + stack0.getLemma() + 'Righ Dep ' + bElem.dependencyLabel] = 'true'
-                dic['H_' + stack0.getLemma() + ' ' + bElem.getLemma() + ' Righ Dep' + bElem.dependencyLabel] = 'true'
-
-        if stack0.dependencyParent > stack0.position:
-            for bElem in buffer:
-                if bElem.position == stack0.dependencyParent:
-                    dic['H_' + stack0.lemma + ' Gouverned By ' + bElem.getLemma()] = 'true'
-                    dic[
-                        'H_' + stack0.lemma + ' Gouverned By ' + bElem.getLemma() + ' ' + stack0.dependencyLabel] = 'true'
-                    break
-        if len(stack) > 1:
-            stack1 = stack[-2]
-            if not isinstance(stack1, Token):
-                return
-            if stack0.dependencyParent == stack1.position:
-                dic['H_Syntaxic Relation ' + '+ ' + stack0.dependencyLabel] = True
-            elif stack0.position == stack1.dependencyParent:
-                dic['H_Syntaxic Relation' + '- ' + stack1.dependencyLabel] = True
 
 
 def generateTriGram(token0, token1, token2, label, transDic):
