@@ -21,8 +21,8 @@ def identify(outputPath, load=False, multipleFile=False):
         svm = SVMClf(labels, data, load=load, save=multipleFile)
     print 'Evaluation started'
     parse(corpus, svm.classifier, svm.verctorizer)
-    with open(outputPath, 'w') as f:
-        f.write(str(corpus))
+    # with open(outputPath, 'w') as f:
+    #    f.write(str(corpus))
     evaluate(corpus)
     print 'finished'
 
@@ -42,10 +42,9 @@ def getTrainLexicon():
     return lexicon
 
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-logging.basicConfig(level=logging.WARNING)
-
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))[:-3]
-print ROOT_DIR
-identify(os.path.join(ROOT_DIR, 'Corpora/AIW/mwe.auto'), load=True, multipleFile=True)
+if __name__ == '__main__':
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+    logging.basicConfig(level=logging.WARNING)
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))[:-3]
+    identify(os.path.join(ROOT_DIR, 'Corpora/AIW/mwe.auto'), load=False, multipleFile=False)

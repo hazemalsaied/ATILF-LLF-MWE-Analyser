@@ -5,8 +5,8 @@ from sklearn.linear_model import LogisticRegression
 
 #vecData = 'vecs_data.pkl'
 #clfData = 'cls_data.pkl'
-clfData ='../Corpora/CBTBasedModel/cls_data.pkl'
-vecData = '../Corpora/CBTBasedModel/vecs_data.pkl'
+clfData ='../Corpora/Models/cls_data.pkl'
+vecData = '../Corpora/Models/vecs_data.pkl'
 class SVMClf:
     def __init__(self, labels, data, load=False, save=False):
         if load:
@@ -17,7 +17,7 @@ class SVMClf:
             return
         self.verctorizer = DictVectorizer()
         featureVec = self.verctorizer.fit_transform(data)
-        self.classifier = LogisticRegression(C=1e5)
+        self.classifier = LogisticRegression(C=1e5, solver='sag')
         self.classifier.fit(featureVec, labels)
         if save:
             with open(clfData, 'wb') as output:
