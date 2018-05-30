@@ -12,11 +12,9 @@ XP_CORPUS_DATA_SET = False
 
 XP_LOAD_MODEL = False
 XP_SAVE_MODEL = True
-print os.path.dirname(os.path.abspath(__file__))
 parts = os.path.dirname(os.path.abspath(__file__)).split('/')
 # for i in parts[:-2]
 p = '/'.join(parts[:-1])
-print 'jkj',p
 PROJECT_PATH = p  # os.path.dirname(os.path.abspath(__file__))
 VEC_TRAIN_DATA_LABELS_NUM = None
 VEC_INPUT_DIMENSIONS = None

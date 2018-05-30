@@ -5,7 +5,6 @@ from random import shuffle
 
 import settings
 from param import *
-from tranType import TransitionType
 
 projectPath = settings.PROJECT_PATH
 
@@ -22,8 +21,10 @@ trainMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/mwe.txt')
 
 testConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/conll.txt')
 testMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/LPP/mwe.txt')
-#testConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/conll')
-#testMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/mwe')
+
+
+# testConllFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/conll')
+# testMweFile = os.path.join(settings.PROJECT_PATH, 'Corpora/AIW/mwe')
 
 def mweToLatex(filePath):
     res = ''
@@ -41,11 +42,12 @@ def mweToLatex(filePath):
                     for mwe in mwes:
                         mweStr += mwe.split(':')[0] + ','
                     mweStr = mweStr[:-1]
-                    res +=  '\\textbf{' + parts[1]+ ' $_{' + mweStr + '}$} '
+                    res += '\\textbf{' + parts[1] + ' $_{' + mweStr + '}$} '
                 else:
                     res += parts[1] + ' '
-    with open(filePath +'.tex', 'w') as f:
+    with open(filePath + '.tex', 'w') as f:
         f.write(res)
+
 
 def readConlluFile(conlluFile):
     sentences = []
@@ -481,59 +483,6 @@ class Sentence:
         for token in self.tokens:
             token.getDirectParent()
 
-    def getConfidence(self):
-        if self.identifiedVMWEs:
-            print self.text
-        for mwe in self.identifiedVMWEs:
-            print 'MWE: ', getTokenLemmas(mwe.tokens)
-
-            if getTokenLemmas(mwe.tokens) == 'good for':
-                pass
-            if len(mwe) == 1:
-                print 'len = 1!'
-                mwe.confidence = 0
-                continue
-            trans = self.initialTransition.next
-            implicatedTransNum, singleLegalTransNum, confidence = (len(mwe) - 1) * 2, 0, 0
-            print 'implicatedTransNum : ', implicatedTransNum
-            while trans.next:
-                if trans.type and trans.type in {TransitionType.MERGE_AS_OTH,
-                                                 TransitionType.MERGE_AS_ID,
-                                                 TransitionType.MERGE_AS_VPC,
-                                                 TransitionType.MERGE_AS_IREFLV,
-                                                 TransitionType.MERGE_AS_LVC}:
-                    if getTokenLemmas(mwe.tokens) == getTokenLemmas(trans.configuration.stack[-1]):
-                        implicatedTrans = [trans]
-                        print str(trans.type)[len('TransitionType:'):]
-                        print trans.confidence
-                        confidence = trans.confidence
-                        capturedTransNum = 1
-                        trans = trans.previous
-                        while trans.previous:
-                            if trans.type == TransitionType.REDUCE:
-                                if trans.previous and trans.previous.previous:
-                                    trans = trans.previous.previous
-                                elif trans.previous:
-                                    trans = trans.previous
-                            else:
-                                print str(trans.type)[len('TransitionType:'):]
-                                print trans.confidence
-                                implicatedTrans.append(trans)
-                                confidence += trans.confidence
-                                if confidence == 0 or confidence == 1:
-                                    singleLegalTransNum += 1
-                                capturedTransNum += 1
-                                trans = trans.previous
-                            if implicatedTransNum == capturedTransNum:
-                                break
-                        break
-                trans = trans.next
-            conf = round(float(confidence / (implicatedTransNum - singleLegalTransNum)), 3)
-            if conf > 1:
-                pass
-            mwe.confidence = conf
-            print 'mwe.confidence', mwe.confidence
-
     def __str__(self):
 
         vMWEText, identifiedMWE = '', ''
@@ -819,5 +768,7 @@ class Token:
                 parentTxt += str(parent) + '\n'
 
         return str(self.position) + ' : ' + self.text + ' : ' + self.posTag + '\n' + 'parent VMWEs\n' + parentTxt
+
+
 if __name__ == '__main__':
     mweToLatex('/Users/halsaied/PycharmProjects/Cornell/ATILF-LLF-MWE-Analyser/Corpora/AIW/mwe')

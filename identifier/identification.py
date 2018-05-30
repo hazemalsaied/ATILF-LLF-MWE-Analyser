@@ -3,7 +3,6 @@ import sys
 import oracle
 from classification import SVMClf
 from corpus import *
-from evaluation import evaluate
 from extraction import extract
 from parser import parse
 
@@ -23,7 +22,7 @@ def identify(outputPath, load=False, multipleFile=False):
     parse(corpus, svm.classifier, svm.verctorizer)
     # with open(outputPath, 'w') as f:
     #    f.write(str(corpus))
-    evaluate(corpus)
+    # evaluate(corpus)
     print 'finished'
 
 

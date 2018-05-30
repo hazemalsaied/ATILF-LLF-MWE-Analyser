@@ -70,7 +70,6 @@ def getFeatures(transition, sent):
     if FeatParams.useTriGram and len(stackElements) > 1 and len(configuration.buffer) > 0:
         generateTriGram(stackElements[-2], stackElements[-1], configuration.buffer[0], 'I_S1 S0 B0', transDic)
 
-
     # Distance information
     if FeatParams.useS0B0Distance and len(configuration.stack) > 0 and len(configuration.buffer) > 0:
         stackTokens = getTokens(configuration.stack[-1])
@@ -82,9 +81,7 @@ def getFeatures(transition, sent):
             sent.tokens.index(configuration.stack[-1]) - sent.tokens.index(configuration.stack[-2]))
     addTransitionHistory(transition, transDic)
 
-
     return transDic
-
 
 
 def generateLinguisticFeatures(token, label, transDic):

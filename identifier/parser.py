@@ -2,7 +2,6 @@ import os
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-import numpy as np
 
 import settings
 from extraction import getFeatures
@@ -14,7 +13,10 @@ mergeAsSet = {TransitionType.MERGE_AS_ID, TransitionType.MERGE_AS_IREFLV,
 
 def parse(corpus, clf, vectorizer):
     initializeSent(corpus)
+    printable = False
     for sent in corpus.testingSents:
+        if printable:
+            break
         printable = False
         if sent.text.lower().startswith('you must see to it that you regularly'):
             printable = True
@@ -29,35 +31,39 @@ def parse(corpus, clf, vectorizer):
 
 def nextTrans(transition, sent, clf, vectorizer, printable=False):
     legalTansDic = transition.getLegalTransDic()
-    if len(legalTansDic) == 1:
-        return initialize(legalTansDic.keys()[0], sent, confidence=1)
-
     featDic = getFeatures(transition, sent)
     if not isinstance(featDic, list):
         featDic = [featDic]
-    probabilities = clf.predict_proba(vectorizer.transform(featDic))[0]
-    confidence = max(probabilities)
     transTypeValue = clf.predict(vectorizer.transform(featDic))[0]
     transType = getType(transTypeValue)
-    if printable:
-        printTransCoeff(transition, transTypeValue, featDic, clf, vectorizer)
+    if printable and False:
+        printTransCoeff(featDic, clf, vectorizer)
     if transType in legalTansDic:
         trans = legalTansDic[transType]
-        trans.confidence = confidence
         return trans
     if len(legalTansDic):
         return initialize(legalTansDic.keys()[0], sent, confidence=1)
 
 
-def printTransCoeff(transition, transTypeValue, featDic, clf, vectorizer):
-    print transition
-    # choosenClsIdx = getTransClsIdx(clf, transTypeValue)
+def printTransCoeff(featDic, clf, vectorizer):
     shiftClsIdx = getTransClsIdx(clf, TransitionType.SHIFT.value)
     reduceClsIdx = getTransClsIdx(clf, TransitionType.REDUCE.value)
     whiteMergeClsIdx = getTransClsIdx(clf, TransitionType.WHITE_MERGE.value)
     mergeClsIdx = getTransClsIdx(clf, TransitionType.MERGE_AS_OTH.value)
     activeFeatDic = featDic[0]
     idxs = [mergeClsIdx, whiteMergeClsIdx, reduceClsIdx, shiftClsIdx]
+    idxsLbls = ["merge", "whiteMerge", "reduce", "shift"]
+    idxsLbl = 0
+
+    total = 0.
+    for f in activeFeatDic:
+        completKey = f + '=' + str(activeFeatDic[f])
+        if completKey in vectorizer.vocabulary_:
+            featIdx = vectorizer.vocabulary_[completKey]
+            for tranType in [0, 1]:  # idxs:
+                # if tranType in clf.coef_ and featIdx in clf.coef_[tranType]:
+                # total += abs(clf.coef_[tranType][featIdx])
+                total += clf.coef_[tranType][featIdx]
     for csIdx in idxs:
         mainFeatDic = dict()
         for k in activeFeatDic:
@@ -72,23 +78,25 @@ def printTransCoeff(transition, transTypeValue, featDic, clf, vectorizer):
                         mainFeatDic[key] = val
                     else:
                         mainFeatDic[key] += val
-        absValues = np.absolute(mainFeatDic.values())
-        totalCoeffecient = sum(absValues)
-        allDeatDic = dict()
+
+        allFeatDic = dict()
         for k in activeFeatDic:
             completKey = k + '=' + str(activeFeatDic[k])
             if completKey in vectorizer.vocabulary_:
                 featIdx = vectorizer.vocabulary_[completKey]
-                allDeatDic[completKey] = clf.coef_[csIdx][featIdx]
-        absValues = np.absolute(allDeatDic.values())
-        total = sum(absValues)
-        # print "#" * 20 + '\n' + str(csIdx) + '\n' + "#" * 20
-        # for k in mainFeatDic:
-        #    print k, ':', int((mainFeatDic[k] * 100 / totalCoeffecient))
-        print "#" * 20 + '\n' + str(csIdx) + '\n' + "#" * 20
-        for k in allDeatDic:
-            if int((allDeatDic[k] * 100 / total)):
-                print k, ':', int((allDeatDic[k] * 100 / total))
+                allFeatDic[completKey] = clf.coef_[csIdx][featIdx]
+
+        classTotal = 0.
+        for k in activeFeatDic:
+            completKey = k + '=' + str(activeFeatDic[k])
+            if completKey in vectorizer.vocabulary_:
+                featIdx = vectorizer.vocabulary_[completKey]
+                classTotal += clf.coef_[csIdx][featIdx]
+        print 'class coeff sum = ', classTotal
+        for k in allFeatDic:
+            # if int((allFeatDic[k] * 100 / total)):
+            print k, ':', round((allFeatDic[k] * 10), 2)
+        idxsLbl += 1
 
 
 def getTransClsIdx(clf, transTypeValue):
@@ -136,9 +144,9 @@ def getValues(path, title=False):
                     if title:
                         print (line.split(':')[0].strip())
                     else:
-                        print int(line.split(':')[1].strip())
-
+                        print float(line.split(':')[1].strip())
 
 
 if __name__ == '__main__':
-    getValues('/Users/halsaied/PycharmProjects/Cornell/ATILF-LLF-MWE-Analyser/Corpora/t.txt', True)
+    getValues('/Users/halsaied/PycharmProjects/Cornell/ATILF-LLF-MWE-Analyser/Corpora/t.txt',
+              False)
